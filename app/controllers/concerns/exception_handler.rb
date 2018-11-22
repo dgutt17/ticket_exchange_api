@@ -1,15 +1,14 @@
 module ExceptionHandler
     extend ActiveSupport::Concern
 
-
     # Define custom error subclasses - rescue catches `StandardErrors`
     class AuthenticationError < StandardError; end
     class MissingToken < StandardError; end
     class InvalidToken < StandardError; end
 
-    included do
+    included do 
         # Define custom handlers
-        escue_from ActiveRecord::RecordInvalid, with: :four_twenty_two
+        rescue_from ActiveRecord::RecordInvalid, with: :four_twenty_two
         rescue_from ExceptionHandler::AuthenticationError, with: :unauthorized_request
         rescue_from ExceptionHandler::MissingToken, with: :four_twenty_two
         rescue_from ExceptionHandler::InvalidToken, with: :four_twenty_two
@@ -18,7 +17,7 @@ module ExceptionHandler
             json_response({ message: e.message }, :not_found)
         end
     end
-
+    
     private
 
     def four_twenty_two(e)
